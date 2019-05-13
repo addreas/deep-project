@@ -2,6 +2,8 @@ import pandas as pd
 import mwxml
 import re
 
+# REQUIREMENTS Pip install mwxml
+
 articles_list = []
 
 RE_P0 = re.compile(r'<!--.*?-->', re.DOTALL | re.UNICODE)
@@ -122,5 +124,5 @@ for page in dump:
 		#print((revision))
 		articles_list.append(revision)
 
-		
+
 		#print('--------------------------------------------------------------')
