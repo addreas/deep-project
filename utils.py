@@ -28,6 +28,7 @@ def get_encoding(articles):
 
     def hot2int(hot): return hot.argmax()
 
-    def hot2str(hots): return "".join(int2char[hot2int(hot)] for hot in hots)
+    def hot2str(hots): return "".join(
+        int2char[hot2int(hot).item()] for hot in hots)
 
     return char2int, int2char, int2hot, str2hot, hot2int, hot2str
