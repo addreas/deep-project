@@ -65,8 +65,6 @@ for page in file:
 		if '</div>' in revision:
 			continue
 
-
-
 		revision = re.sub(r"\[\[File.*\]\]\n", "", revision)  #Remove file links
 		
 		revision = re.sub(r"\[\[Image.*\]\]\n", "", revision)
@@ -139,10 +137,10 @@ for page in file:
 			continue
 
 		countOver = countOver + 1
-		print((revision))
-		print('--------------------------------------------------------------')
+		#print((revision))
+		#print('--------------------------------------------------------------')
 
-		#articles_list.append(revision)
-print(countUnder)
-print(countOver)
+		articles_list.append(revision)
+#print(countUnder)
+#print(countOver)
 
