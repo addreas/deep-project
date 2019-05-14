@@ -16,6 +16,20 @@ def load_articles(filename):
     return articles
 
 
+def load_goblet(filename):
+    chapters = []
+    with open(filename, 'r') as f:
+        chapter = ''
+        for line in f:
+            if re.match('^CHAPTER', line) and len(chapter) > 2:
+                chapters.append(chapter)
+                chapter = ''
+
+            chapter += line.strip()
+
+    return chapters
+
+
 def get_encoding(articles):
     chars = list(set("".join(articles)))
 
