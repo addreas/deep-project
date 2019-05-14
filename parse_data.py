@@ -1,6 +1,6 @@
-import pandas as pd 
 import mwxml
 import re
+from string import printable as english
 
 # REQUIREMENTS Pip install mwxml
 
@@ -45,8 +45,10 @@ r'(\n.{0,4}((bgcolor)|(\d{0,1}[ ]?colspan)|(rowspan)|(style=)|(class=)|(align=)|
 r'(^.{0,2}((bgcolor)|(\d{0,1}[ ]?colspan)|(rowspan)|(style=)|(class=)|(align=))(.*))',
 re.UNICODE)
 
-dump = mwxml.Dump.from_file(open("Wikipedia-Dataset.xml"))
-for page in dump:
+countUnder = 0
+countOver = 0
+file = mwxml.Dump.from_file(open("Wikipedia-Dataset.xml"))
+for page in file:
 	for revision in page:
 		revision = revision.text.split('==References')[0]
 		revision = revision.split('== References')[0]
@@ -56,11 +58,11 @@ for page in dump:
 		revision = revision.split('==Further reading')[0]
 		revision = revision.split('==See also')[0]
 		revision = revision.split('== See also')[0]
+		revision = revision.split('==See also')[0]
+		revision = revision.split('== See also')[0]
 
 		if '</div>' in revision:
 			continue
-
-
 
 		revision = re.sub(r"\[\[File.*\]\]\n", "", revision)  #Remove file links
 		
@@ -72,7 +74,7 @@ for page in dump:
 
 		revision = re.sub(r"\*.*?\n", "", revision)			# Remove lists
 		revision = re.sub(RE_P0,"",revision) 				# Remove
-		revision = re.sub(r"&[A-Za-z]+?;","", revision)     # Remove HTML
+		revision = re.sub(r"&[A-Za-z]+?;","", revision)     # Remove HTML encoded words
 		
 
 		revision = re.sub(r"\[\[.*?\|(.+?)\]\]",r"\1",revision)
@@ -105,24 +107,39 @@ for page in dump:
 		#revision = re.sub(r"{{.*?}}", "", revision)
 		revision = re.sub(r"[{}\[\]]*", "", revision) #Remove brackets
 
-		revision = re.sub(r"\..*?\ ",". ",revision)
-		revision = re.sub(r"filename=.*?\.[a-z0-9]+? ","",revision)
+
+		revision = re.sub(r"filename=.*?\.([a-z0-9]+?)?[ \n\r\t]","",revision)  #REmove filename
 
 
-		revision = re.sub(r'(?m)^[#:;_].*?\n', '', revision) #Removes lines starting with #
-		revision = re.sub(r'^\w\n',"", revision)
+		revision = re.sub(r'(?m)^[#:;_| \t].*?\n', '', revision) #Removes lines starting with #,:,;,_,|
 
-		revision = re.sub(r"[===|==][ ]?.+?[ ]?[===|==]\n+(=)",r"\1",revision)  # Remove unneccesary line
+		revision = re.sub(r"[===|==][ ]?.+?[ ]?[===|==]\n+(=)",r"\1",revision)  # Remove unneccesary header line
 
-		revision = revision.strip()
+
+		revision = re.sub(r"\..*?\ ",". ",revision)      #Remove characters after .
+		revision = re.sub(r"\.\w+?\n",".\n",revision)
 
 		revision = re.sub(r'\n\n\n.*?\n\n\n',"",revision,flags=re.DOTALL)
 
+		revision = ''.join(c for c in revision if c in english)
+		revision = revision.replace('|',' ')
+
+		revision = re.sub(r"\w+?=\w+((=\w+)?)+","",revision) # Remove all words containing = except for titles
+
+		revision = ''.join(c for c in revision.splitlines(1) if (len(c)>100 or c is '\n') or "==" in c)
+
+		revision = revision.strip()
+
+
 		if len(revision) < 700:
+			countUnder = countUnder + 1
 			continue
 
+		countOver = countOver + 1
 		#print((revision))
-		articles_list.append(revision)
-
-
 		#print('--------------------------------------------------------------')
+
+		articles_list.append(revision)
+#print(countUnder)
+#print(countOver)
+
