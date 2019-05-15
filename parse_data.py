@@ -53,7 +53,7 @@ for page in file:
 		#print(revision.text)
 		#continue
 
-		revision = revision.text.split('==References')[0]
+		revision = revision.text.split('==References')[0]    # Exclude these sections from the articles
 		revision = revision.split('== References')[0]
 		revision = revision.split('== Biobliography')[0]
 		revision = revision.split('==Biobliography')[0]
@@ -82,14 +82,12 @@ for page in file:
 
 		revision = re.sub(r"\[\[([^|]+?)\]\]",r'\1',revision)
 		revision = re.sub(r"\[\[.*?\|(.+?)\]\]",r"\1",revision)
-		#revision = re.sub(r"\{\{.*?\|(.+?)\|.*?\}\}",r"\1",revision)
 
 		revision = re.sub(RE_P2,"",revision) 
 		revision = re.sub(RE_P3,"",revision)
 		revision = re.sub(RE_P4,"",revision) 
 		revision = re.sub(RE_P5,"",revision)
 
-		#revision = re.sub(RE_P7,"",revision)
 		revision = re.sub(RE_P8,"",revision)
 
 
@@ -97,18 +95,11 @@ for page in file:
 		revision = re.sub(RE_P10,"",revision) 
 
 		revision = re.sub(RE_P11,"",revision)
-		#revision = re.sub(RE_P12,"",revision)
-		#revision = re.sub(RE_P13,"",revision) 
 
 		revision = re.sub(RE_P14,"",revision)
 		revision = re.sub(r'{\|.*?\|}',"",revision,flags=re.DOTALL)
 
-		#revision = re.sub(RE_P15,"",revision)
-		#revision = re.sub(RE_P16,"",revision) 
-		#revision = re.sub(RE_P17,"",revision) 
 
-		#revision = re.sub(r"\[\[([A-Za-z #\(\)]+\|)","",revision)
-		#revision = re.sub(r"{{.*?}}", "", revision)
 		revision = re.sub(r"[{}\[\]]*", "", revision) #Remove brackets
 
 
@@ -117,7 +108,7 @@ for page in file:
 
 		revision = re.sub(r'(?m)^[#:;_| \t].*?\n', '', revision) #Removes lines starting with #,:,;,_,|
 
-		revision = re.sub(r"[===|==][ ]?.+?[ ]?[===|==]\n+(=)",r"\1",revision)  # Remove unneccesary header line
+		revision = re.sub(r"[===|==][ ]?.+?[ ]?[===|==]\n+(=)",r"\1",revision)  # Remove headers with no content
 
 
 		revision = re.sub(r"\..*?\ ",". ",revision)      #Remove characters after .
@@ -132,6 +123,7 @@ for page in file:
 
 		revision = ''.join(c for c in revision.splitlines(1) if (len(c)>100 or c is '\n') or "==" in c)
 
+
 		revision = revision.strip()
 
 
@@ -140,10 +132,10 @@ for page in file:
 			continue
 
 		countOver = countOver + 1
-		#print((revision))
+		print((revision))
 		#print('--------------------------------------------------------------')
 
-		articles_list.append(revision)
+		#articles_list.append(revision)
 #print(countUnder)
 #print(countOver)
 
