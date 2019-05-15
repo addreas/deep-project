@@ -50,6 +50,9 @@ countOver = 0
 file = mwxml.Dump.from_file(open("Wikipedia-Dataset.xml"))
 for page in file:
 	for revision in page:
+		#print(revision.text)
+		#continue
+
 		revision = revision.text.split('==References')[0]
 		revision = revision.split('== References')[0]
 		revision = revision.split('== Biobliography')[0]
@@ -77,8 +80,9 @@ for page in file:
 		revision = re.sub(r"&[A-Za-z]+?;","", revision)     # Remove HTML encoded words
 		
 
+		revision = re.sub(r"\[\[([^|]+?)\]\]",r'\1',revision)
 		revision = re.sub(r"\[\[.*?\|(.+?)\]\]",r"\1",revision)
-		revision = re.sub(r"\{\{.*?\|(.+?)\|.*?\}\}",r"\1",revision)
+		#revision = re.sub(r"\{\{.*?\|(.+?)\|.*?\}\}",r"\1",revision)
 
 		revision = re.sub(RE_P2,"",revision) 
 		revision = re.sub(RE_P3,"",revision)
