@@ -35,14 +35,5 @@ def get_encoding(articles):
 
     char2int = {ch: i for i, ch in enumerate(chars)}
     int2char = {i: ch for i, ch in enumerate(chars)}
-    int2hot = np.identity(len(chars))
 
-    def str2hot(string): return np.array(
-        [int2hot[char2int[c]] for c in string])
-
-    def hot2int(hot): return hot.argmax()
-
-    def hot2str(hots): return "".join(
-        int2char[hot2int(hot).item()] for hot in hots)
-
-    return char2int, int2char, int2hot, str2hot, hot2int, hot2str
+    return char2int, int2char
