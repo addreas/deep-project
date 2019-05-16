@@ -56,13 +56,14 @@ class RNNModule(nn.Module):
 
 
 def get_hot_article(article, encoding, device):
-    char2int, int2char, int2hot, str2hot, hot2int, hot2str = encoding
-    x = str2hot(article[:-1])
-    # CrossEntropyLoss wants integer labels, not one hot vectors...
-    y = [char2int[c] for c in article[1:]]
+    char2int, int2char = encoding
 
-    x = torch.tensor(x, dtype=torch.float).to(device)
-    y = torch.tensor(y, dtype=torch.long).to(device)
+    x = F.one_hot(
+        torch.tensor([char2int[c] for c in article[:-1]]),
+        len(char2int)
+    ).type(torch.float).to(device)
+
+    y = torch.tensor([char2int[c] for c in article[1:]]).to(device)
 
     return x, y
 
@@ -145,12 +146,11 @@ def predict(net, encoding, initial_words, length=100):
 
 
 def predict_chars(net, encoding, initial_words, length):
+    char2int, int2char = encoding
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    int2char = encoding[1]
-    int2hot = encoding[2]
-    char2int, int2char, int2hot, str2hot, hot2int, hot2str = encoding
-    initial_hot = torch.tensor(
-        str2hot(initial_words), dtype=torch.float).to(device)
+    initial_hot = F.one_hot(
+        torch.tensor([char2int[c] for c in initial_words]), len(char2int)
+    ).type(torch.float).to(device)
 
     yield from initial_words
 
@@ -160,8 +160,9 @@ def predict_chars(net, encoding, initial_words, length):
 
         for _ in range(length):
             yield int2char[next_int]
-            next_hot = torch.tensor(
-                int2hot[next_int], dtype=torch.float).to(device)
+            next_hot = F.one_hot(
+                torch.tensor(next_int), len(char2int)
+            ).type(torch.float).to(device)
 
             out, hidden = net(next_hot.view(1, -1), hidden)
             next_int = random_choice(out)
